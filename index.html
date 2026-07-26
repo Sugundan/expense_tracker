@@ -178,13 +178,14 @@
       </div>
     </div>
 
+    <div class="field"><label>Notes<span class="req">*</span></label><div style="margin-top:10px;"><textarea id="notes" placeholder="What was this for?"></textarea></div></div>
+
     <div class="field"><label>Logged by<span class="req">*</span></label>
       <div class="who" id="whoGroup" style="margin-top:10px;"><button type="button" data-val="Sugundan">Sugundan</button><button type="button" data-val="Abi">Abi</button></div>
     </div>
 
     <div class="field"><label>Category<span class="req">*</span></label><div class="chips chips-scroll" id="catGroup" style="margin-top:10px;"></div></div>
     <div class="field"><label>Mode of payment</label><div class="chips chips-scroll" id="modeGroup" style="margin-top:10px; max-height:18dvh;"></div></div>
-    <div class="field"><label>Notes<span class="req">*</span></label><div style="margin-top:10px;"><textarea id="notes" placeholder="What was this for?"></textarea></div></div>
 
     <div class="submit-row">
       <button type="submit" class="submit-btn" id="submitBtn">Log entry</button>
@@ -590,8 +591,11 @@
   setInterval(retryPending, 30000);
 
   /* ---------- Submit handler ---------- */
+  let isSubmitting = false;
   document.getElementById('expenseForm').addEventListener('submit', (e) => {
     e.preventDefault();
+    if (isSubmitting) return;   // guard against double-tap / double-fire creating duplicate entries
+
     const who = document.querySelector('#whoGroup button.active');
     const cat = document.querySelector('#catGroup .chip.active');
     const amount = document.getElementById('amount').value;
@@ -601,6 +605,10 @@
     const errMsg = document.getElementById('errMsg');
     if (!who || !cat || !amount || !notes) { errMsg.style.display = 'block'; return; }
     errMsg.style.display = 'none';
+
+    isSubmitting = true;
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
 
     const entry = {
       id: 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
@@ -630,6 +638,9 @@
     amountInput.classList.remove('has-val');
     document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
     if (savedWho) { const m = document.querySelector('#whoGroup button[data-val="' + localStorage.getItem(WHO_KEY) + '"]'); if (m) m.classList.add('active'); }
+
+    // Re-enable once the entry is safely saved locally and the reset animation has played
+    setTimeout(() => { isSubmitting = false; submitBtn.disabled = false; }, 700);
   });
 </script>
 
