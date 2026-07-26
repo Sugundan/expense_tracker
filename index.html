@@ -88,6 +88,9 @@
 
   /* Chips */
   .chips{ display:flex; flex-wrap:wrap; gap:7px; }
+  .chips-scroll{ max-height:30dvh; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-right:2px; padding-bottom:2px; }
+  .chips-scroll::-webkit-scrollbar{ width:4px; }
+  .chips-scroll::-webkit-scrollbar-thumb{ background:var(--accent-border); border-radius:2px; }
   .chip{ padding:8px 13px; border-radius:999px; border:1.3px solid var(--pill-border); background:var(--card); font-size:12.5px; line-height:1.35; font-weight:500; color:var(--ink); cursor:pointer; user-select:none; transition:all .12s ease; box-shadow: var(--shadow-sm); }
   .chip.active{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; box-shadow: 0 4px 10px rgba(188,122,23,0.35); }
 
@@ -179,8 +182,8 @@
       <div class="who" id="whoGroup" style="margin-top:10px;"><button type="button" data-val="Sugundan">Sugundan</button><button type="button" data-val="Abi">Abi</button></div>
     </div>
 
-    <div class="field"><label>Category<span class="req">*</span></label><div class="chips" id="catGroup" style="margin-top:10px;"></div></div>
-    <div class="field"><label>Mode of payment</label><div class="chips" id="modeGroup" style="margin-top:10px;"></div></div>
+    <div class="field"><label>Category<span class="req">*</span></label><div class="chips chips-scroll" id="catGroup" style="margin-top:10px;"></div></div>
+    <div class="field"><label>Mode of payment</label><div class="chips chips-scroll" id="modeGroup" style="margin-top:10px; max-height:18dvh;"></div></div>
     <div class="field"><label>Notes<span class="req">*</span></label><div style="margin-top:10px;"><textarea id="notes" placeholder="What was this for?"></textarea></div></div>
 
     <div class="submit-row">
@@ -245,7 +248,7 @@
       var scaleW = availableW / naturalW;   // never let the card get wider than the screen
       var scale = Math.min(scaleH, scaleW);
       if (scale > 1.12) scale = 1.12;   // don't blow up on very tall screens
-      if (scale < 0.45) scale = 0.45;   // readability floor on tiny screens
+      if (scale < 0.62) scale = 0.62;   // readability floor on tiny screens
       pad.style.transform = 'scale(' + scale.toFixed(4) + ')';
     }
     function scheduleFit(){
