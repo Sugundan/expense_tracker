@@ -231,12 +231,19 @@
     function fit(){
       pending = false;
       pad.style.transform = 'none';
-      var available = document.body.clientHeight
-        - parseFloat(getComputedStyle(document.body).paddingTop || 0)
-        - parseFloat(getComputedStyle(document.body).paddingBottom || 0);
-      var natural = pad.scrollHeight;
-      if (!natural || !available) return;
-      var scale = available / natural;
+      var bodyStyle = getComputedStyle(document.body);
+      var availableH = document.body.clientHeight
+        - parseFloat(bodyStyle.paddingTop || 0)
+        - parseFloat(bodyStyle.paddingBottom || 0);
+      var availableW = document.body.clientWidth
+        - parseFloat(bodyStyle.paddingLeft || 0)
+        - parseFloat(bodyStyle.paddingRight || 0);
+      var naturalH = pad.scrollHeight;
+      var naturalW = pad.getBoundingClientRect().width;
+      if (!naturalH || !availableH || !naturalW || !availableW) return;
+      var scaleH = availableH / naturalH;
+      var scaleW = availableW / naturalW;   // never let the card get wider than the screen
+      var scale = Math.min(scaleH, scaleW);
       if (scale > 1.12) scale = 1.12;   // don't blow up on very tall screens
       if (scale < 0.45) scale = 0.45;   // readability floor on tiny screens
       pad.style.transform = 'scale(' + scale.toFixed(4) + ')';
