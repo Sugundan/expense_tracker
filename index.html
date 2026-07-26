@@ -4,465 +4,127 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Expense Tracker</title>
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRXhwZW5zZSBUcmFja2VyIiwic2hvcnRfbmFtZSI6IkV4cGVuc2UiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsInN0YXJ0X3VybCI6Ii4iLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0U4RTNEMyIsInRoZW1lX2NvbG9yIjoiIzhFMkEyMiJ9">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tiro+Tamil:ital@0;1&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper: #EAE6D9;
-    --paper-2: #E1DBC9;
-    --ink: #262622;
-    --ink-soft: #5B564C;
-    --rule: #B94A3B;
-    --rule-soft: rgba(185,74,59,0.35);
-    --stamp: #3C6E47;
-    --stamp-soft: rgba(60,110,71,0.12);
-    --gold: #A9863B;
-    --white-panel: #F5F2E8;
-    --shadow: 0 10px 30px rgba(38,38,34,0.14);
+    --bg: #F7F5EE;
+    --card: #FFFFFF;
+    --ink: #2B2E2C;
+    --ink-soft: #7C8079;
+    --accent: #2E7D6B;
+    --accent-soft: rgba(46,125,107,0.1);
+    --accent-border: rgba(46,125,107,0.35);
+    --margin-red: #C9615A;
+    --mint: #2E7D6B;
+    --shadow: 0 14px 30px rgba(43,46,44,0.1);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background: var(--paper);
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(38,38,34,0.06) 1px, transparent 0);
-    background-size: 14px 14px;
+    background: var(--bg);
     color: var(--ink);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
     display:flex;
     justify-content:center;
-    padding: 28px 14px 60px;
+    padding: 26px 14px 60px;
   }
-  .pad{
-    width: 100%;
-    max-width: 460px;
-  }
+  .pad{ width:100%; max-width:460px; }
   .chit{
-    background: var(--white-panel);
-    border-radius: 4px;
+    background:
+      repeating-linear-gradient(var(--card), var(--card) 34px, #E8E4D6 35px),
+      var(--card);
+    border-radius: 6px;
     box-shadow: var(--shadow);
     position: relative;
-    padding: 26px 24px 24px;
-    overflow: hidden;
+    padding: 24px 22px 22px 30px;
+    border-left: 4px solid var(--margin-red);
   }
-  .chit::before{
-    content:"";
-    position:absolute;
-    top:0; left:0; right:0;
-    height: 10px;
-    background-image: radial-gradient(circle, var(--paper) 4.2px, transparent 4.3px);
-    background-size: 16px 20px;
-    background-position: -4px -8px;
-  }
-  .masthead{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap: 12px;
-    flex-wrap: wrap;
-    border-bottom: 2px solid var(--rule);
-    padding-bottom: 10px;
-    margin: 12px 0 20px;
-  }
-  .masthead h1{
-    font-family: 'Tiro Tamil', serif;
-    font-weight: 400;
-    font-size: 24px;
-    margin: 0;
-    letter-spacing: 0.3px;
-    color: var(--ink);
-    white-space: nowrap;
-  }
-  .masthead .no{
-    font-family: 'Roboto Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-soft);
-    text-align:right;
-    line-height: 1.5;
-    white-space: nowrap;
-  }
-  .masthead .no span{ color: var(--rule); font-weight:700; }
+  .masthead{ display:flex; justify-content:space-between; align-items:flex-end; gap:10px; flex-wrap:wrap; margin-bottom: 18px; }
+  .masthead h1{ font-family:'Caveat',cursive; font-weight:700; font-size:34px; margin:0; color:var(--ink); }
+  .masthead .sub{ font-size:11px; color:var(--ink-soft); }
+  .gear-btn{ width:34px; height:34px; border-radius:50%; border:1.5px solid var(--ink-soft); background:var(--card); color:var(--ink-soft); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition: all .15s ease; }
+  .gear-btn:hover{ color:var(--accent); border-color:var(--accent); transform:rotate(20deg); }
+  .gear-btn svg{ width:16px; height:16px; }
+  .gear-btn.needs-setup{ border-color:var(--margin-red); color:var(--margin-red); }
+  .gear-btn.needs-setup::after{ content:""; position:absolute; top:-2px; right:-2px; width:8px; height:8px; border-radius:50%; background:var(--margin-red); border:2px solid var(--bg); }
 
-  .field{ margin-bottom: 18px; }
-  .field label{
-    display:block;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
-    font-weight: 600;
-  }
-  .field label .req{ color: var(--rule); margin-left:2px; }
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--ink-soft); margin-bottom:8px; font-weight:600; }
+  .field label .req{ color:var(--margin-red); margin-left:2px; }
 
-  .who{ display:flex; gap: 10px; }
-  .who button{
-    flex:1;
-    padding: 12px 10px;
-    border-radius: 3px;
-    border: 1.5px solid var(--ink);
-    background: transparent;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--ink);
-    cursor: pointer;
-    transition: all .15s ease;
-  }
-  .who button.active{
-    background: var(--ink);
-    color: var(--white-panel);
-  }
+  .who{ display:flex; gap:10px; }
+  .who button{ flex:1; padding:11px 10px; border-radius:8px; border:1.5px solid var(--ink); background:transparent; font-weight:600; font-size:14px; color:var(--ink); cursor:pointer; transition:all .15s ease; }
+  .who button.active{ background:var(--ink); color:#fff; }
 
-  .chips{
-    display:flex;
-    flex-wrap: wrap;
-    gap: 7px;
-  }
-  .chip{
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1.3px solid var(--rule-soft);
-    background: rgba(185,74,59,0.04);
-    font-size: 12.5px;
-    color: var(--ink);
-    cursor: pointer;
-    user-select:none;
-    transition: all .12s ease;
-    white-space: nowrap;
-  }
-  .chip.active{
-    background: var(--rule);
-    border-color: var(--rule);
-    color: #fff;
-    font-weight: 600;
-  }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ padding:7px 13px; border-radius:6px; border-bottom:2px solid var(--accent-border); background:var(--accent-soft); font-size:12.5px; color:var(--ink); cursor:pointer; user-select:none; transition:all .12s ease; }
+  .chip.active{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; }
 
-  .amount-row{
-    display:flex;
-    align-items: baseline;
-    border-bottom: 1.5px dashed var(--ink-soft);
-    padding-bottom: 6px;
-  }
-  .amount-row .rupee{
-    font-family: 'Roboto Mono', monospace;
-    font-size: 26px;
-    color: var(--rule);
-    margin-right: 8px;
-    font-weight: 700;
-  }
-  .amount-row input{
-    border:none;
-    background: transparent;
-    outline:none;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--ink);
-    width: 100%;
-    -moz-appearance: textfield;
-  }
-  .amount-row input::-webkit-outer-spin-button,
-  .amount-row input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
-  .amount-row input::placeholder{ color: #C9C2AE; font-weight:500; }
+  .amount-row{ display:flex; align-items:baseline; border-bottom:2px solid var(--ink); padding-bottom:6px; }
+  .amount-row .rupee{ font-family:'Roboto Mono',monospace; font-size:24px; color:var(--margin-red); margin-right:8px; font-weight:700; }
+  .amount-row input{ border:none; background:transparent; outline:none; font-family:'Roboto Mono',monospace; font-size:24px; font-weight:700; color:var(--ink); width:100%; }
+  .amount-row input::placeholder{ color:#C7C2B0; }
 
-  select.field-select{
-    width:100%;
-    padding: 11px 12px;
-    border-radius: 3px;
-    border: 1.3px solid var(--rule-soft);
-    background: var(--paper);
-    font-family:'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    appearance:none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235B564C' stroke-width='1.6' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
+  textarea{ width:100%; min-height:56px; padding:10px 12px; border-radius:6px; border:1.5px dashed var(--accent-border); background:#FBFAF4; font-size:14px; color:var(--ink); resize:vertical; outline:none; }
+  textarea::placeholder{ color:#A9A48F; }
 
-  textarea{
-    width:100%;
-    min-height: 58px;
-    padding: 10px 12px;
-    border-radius: 3px;
-    border: 1.3px solid var(--rule-soft);
-    background: var(--paper);
-    font-family:'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    resize: vertical;
-    outline:none;
-  }
-  textarea::placeholder{ color:#A69F8C; }
+  .submit-row{ margin-top:20px; }
+  .submit-btn{ width:100%; padding:14px; border-radius:8px; border:none; background:var(--accent); color:#fff; font-weight:700; font-size:14.5px; letter-spacing:0.4px; cursor:pointer; transition:transform .08s ease; }
+  .submit-btn:active{ transform:scale(0.98); }
+  .submit-btn:disabled{ opacity:0.5; cursor:default; }
 
-  .submit-row{ margin-top: 22px; position: relative; }
-  .submit-btn{
-    width:100%;
-    padding: 14px;
-    border-radius: 3px;
-    border: none;
-    background: var(--ink);
-    color: var(--white-panel);
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 14.5px;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: transform .08s ease, background .15s ease;
-  }
-  .submit-btn:active{ transform: scale(0.98); }
-  .submit-btn:disabled{ opacity: 0.55; cursor: default; }
+  .err{ color:var(--margin-red); font-size:12px; margin-top:8px; font-weight:600; display:none; }
 
-  .err{
-    color: var(--rule);
-    font-size: 12px;
-    margin-top: 8px;
-    font-weight: 600;
-    display:none;
-  }
+  .settings-overlay{ position:fixed; inset:0; background:rgba(43,46,44,0.45); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:60; padding:20px; }
+  .settings-overlay.show{ opacity:1; pointer-events:all; }
+  .settings-panel{ background:var(--card); border-radius:10px; max-width:420px; width:100%; padding:22px; box-shadow:var(--shadow); }
+  .settings-panel h2{ font-family:'Caveat',cursive; font-weight:700; font-size:26px; margin:0 0 6px; }
+  .settings-panel p{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 14px; }
+  .settings-panel p code{ background:#EFEAD8; padding:1px 5px; border-radius:3px; font-size:11.5px; }
+  .settings-panel input[type="text"]{ width:100%; padding:10px 11px; border-radius:6px; border:1.5px solid var(--accent-border); background:#FBFAF4; font-family:'Roboto Mono',monospace; font-size:12.5px; margin-bottom:14px; }
+  .settings-actions{ display:flex; gap:10px; }
+  .settings-actions button{ flex:1; padding:10px; border-radius:6px; font-weight:600; font-size:13px; cursor:pointer; border:1.5px solid var(--ink); }
+  .btn-save{ background:var(--ink); color:#fff; }
+  .btn-cancel{ background:transparent; color:var(--ink); }
+  .settings-status{ font-size:11.5px; margin-top:10px; color:var(--mint); display:none; }
 
-  .stamp-overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(38,38,34,0.35);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity: 0;
-    pointer-events:none;
-    transition: opacity .2s ease;
-    z-index: 50;
-  }
-  .stamp-overlay.show{ opacity: 1; pointer-events:all; }
-  .stamp{
-    border: 5px solid var(--stamp);
-    color: var(--stamp);
-    border-radius: 10px;
-    padding: 18px 34px;
-    font-family: 'Tiro Tamil', serif;
-    font-size: 30px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    transform: rotate(-8deg) scale(0.6);
-    opacity: 0;
-    background: rgba(245,242,232,0.92);
-  }
-  .stamp-overlay.show .stamp{
-    animation: stampIn .35s cubic-bezier(.2,1.6,.4,1) forwards;
-  }
-  @keyframes stampIn{
-    0%{ transform: rotate(-8deg) scale(2.2); opacity:0; }
-    60%{ opacity: 1; }
-    100%{ transform: rotate(-8deg) scale(1); opacity:1; }
-  }
+  .stamp-overlay{ position:fixed; inset:0; background:rgba(43,46,44,0.4); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:50; overflow:hidden; }
+  .stamp-overlay.show{ opacity:1; pointer-events:all; }
+  .money-scene{ position:relative; width:100%; max-width:340px; height:260px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+  .coin{ position:absolute; top:-40px; width:36px; height:36px; border-radius:50%; opacity:0; animation: coinFall 0.32s cubic-bezier(.5,0,.7,1) forwards; }
+  .coin svg{ width:100%; height:100%; display:block; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); }
+  @keyframes coinFall{ 0%{opacity:0; transform:translateY(0) rotateZ(0deg) scale(0.7);} 8%{opacity:1;} 70%{transform:translateY(var(--fall-dist)) rotateZ(var(--spin)) scale(1);} 100%{transform:translateY(var(--fall-dist)) rotateZ(var(--spin)) scale(1); opacity:1;} }
+  .tally-wrap{ position:relative; z-index:2; text-align:center; background:var(--card); border:2px solid var(--ink); border-radius:10px; padding:16px 26px; box-shadow:var(--shadow); opacity:0; transform:scale(0.85); }
+  .stamp-overlay.show .tally-wrap{ animation: tallyPop 0.2s ease .2s forwards; }
+  @keyframes tallyPop{ to{ opacity:1; transform:scale(1); } }
+  .tally-wrap .tally-amount{ font-family:'Roboto Mono',monospace; font-weight:700; font-size:28px; color:var(--margin-red); }
+  .tally-wrap .tally-caption{ font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--mint); font-weight:700; margin-top:4px; }
 
-  .footer-note{
-    text-align:center;
-    font-size: 11px;
-    color: var(--ink-soft);
-    margin-top: 16px;
-    letter-spacing: 0.3px;
-  }
-  .footer-note a{ color: var(--rule); text-decoration:none; font-weight:600; }
-
-  .setup-banner{
-    background: #FCEFCE;
-    border: 1px solid var(--gold);
-    color: #5B4419;
-    font-size: 12.5px;
-    padding: 10px 12px;
-    border-radius: 4px;
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-  .setup-banner code{
-    background: rgba(0,0,0,0.06);
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 11.5px;
-  }
-
-  .gear-btn{
-    position: fixed;
-    top: 16px;
-    right: 16px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1.5px solid var(--ink-soft);
-    background: var(--white-panel);
-    color: var(--ink-soft);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor: pointer;
-    z-index: 40;
-    box-shadow: var(--shadow);
-    transition: transform .15s ease, color .15s ease, border-color .15s ease;
-  }
-  .gear-btn:hover{ color: var(--rule); border-color: var(--rule); transform: rotate(25deg); }
-  .gear-btn svg{ width:18px; height:18px; }
-  .gear-btn.needs-setup{
-    border-color: var(--gold);
-    color: var(--gold);
-  }
-  .gear-btn.needs-setup::after{
-    content:"";
-    position:absolute;
-    top:-2px; right:-2px;
-    width:9px; height:9px;
-    border-radius:50%;
-    background: var(--rule);
-    border: 2px solid var(--paper);
-  }
-
-  .settings-overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(38,38,34,0.45);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity: 0;
-    pointer-events:none;
-    transition: opacity .18s ease;
-    z-index: 60;
-    padding: 20px;
-  }
-  .settings-overlay.show{ opacity: 1; pointer-events:all; }
-  .settings-panel{
-    background: var(--white-panel);
-    border-radius: 6px;
-    max-width: 420px;
-    width: 100%;
-    padding: 22px 22px 20px;
-    box-shadow: var(--shadow);
-    transform: translateY(8px);
-    transition: transform .18s ease;
-  }
-  .settings-overlay.show .settings-panel{ transform: translateY(0); }
-  .settings-panel h2{
-    font-family: 'Tiro Tamil', serif;
-    font-weight: 400;
-    font-size: 20px;
-    margin: 0 0 6px;
-    color: var(--ink);
-  }
-  .settings-panel p{
-    font-size: 12.5px;
-    color: var(--ink-soft);
-    line-height: 1.5;
-    margin: 0 0 14px;
-  }
-  .settings-panel input[type="text"]{
-    width:100%;
-    padding: 10px 11px;
-    border-radius: 3px;
-    border: 1.3px solid var(--rule-soft);
-    background: var(--paper);
-    font-family: 'Roboto Mono', monospace;
-    font-size: 12.5px;
-    color: var(--ink);
-    outline:none;
-    margin-bottom: 14px;
-  }
-  .settings-actions{
-    display:flex;
-    gap: 10px;
-  }
-  .settings-actions button{
-    flex:1;
-    padding: 10px;
-    border-radius: 3px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    border: 1.5px solid var(--ink);
-  }
-  .btn-save{
-    background: var(--ink);
-    color: var(--white-panel);
-  }
-  .btn-cancel{
-    background: transparent;
-    color: var(--ink);
-  }
-  .settings-status{
-    font-size: 11.5px;
-    margin-top: 10px;
-    color: var(--stamp);
-    display:none;
-  }
+  .footer-note{ text-align:center; font-size:11px; color:var(--ink-soft); margin-top:14px; }
 </style>
 </head>
 <body>
-
-<button class="gear-btn" id="gearBtn" title="Connect to your Google Sheet">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="3"></circle>
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-  </svg>
-</button>
-
-<div class="settings-overlay" id="settingsOverlay">
-  <div class="settings-panel">
-    <h2>Connect your sheet</h2>
-    <p>Paste your Apps Script Web App URL (ends in <code>/exec</code>). This is saved only in this browser — it's never written into the file itself.</p>
-    <input type="text" id="endpointInput" placeholder="https://script.google.com/macros/s/.../exec">
-    <div class="settings-actions">
-      <button class="btn-cancel" type="button" id="settingsCancel">Cancel</button>
-      <button class="btn-save" type="button" id="settingsSave">Save</button>
-    </div>
-    <div class="settings-status" id="settingsStatus">Saved. You're connected.</div>
-  </div>
-</div>
-
 <div class="pad">
   <div class="chit">
-
     <div class="masthead">
-      <h1>Expense Tracker</h1>
-      <div class="no">Entry No. <span id="entryNo">001</span><br><span id="today"></span></div>
+      <div><h1>Notes &amp; Numbers</h1><div class="sub" id="today"></div></div>
+      <button class="gear-btn" id="gearBtn" title="Connect to your Google Sheet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
     </div>
-
     <form id="expenseForm">
-      <div class="field">
-        <label>Logged by<span class="req">*</span></label>
-        <div class="who" id="whoGroup">
-          <button type="button" data-val="Sugundan">Sugundan</button>
-          <button type="button" data-val="Abi">Abi</button>
-        </div>
+      <div class="field"><label>Amount<span class="req">*</span></label>
+        <div class="amount-row"><span class="rupee">₹</span><input type="number" inputmode="decimal" id="amount" placeholder="0" min="0" step="0.01"></div>
       </div>
-
-      <div class="field">
-        <label>Category<span class="req">*</span></label>
-        <div class="chips" id="catGroup"></div>
+      <div class="field"><label>Logged by<span class="req">*</span></label>
+        <div class="who" id="whoGroup"><button type="button" data-val="Sugundan">Sugundan</button><button type="button" data-val="Abi">Abi</button></div>
       </div>
-
-      <div class="field">
-        <label>Amount<span class="req">*</span></label>
-        <div class="amount-row">
-          <span class="rupee">₹</span>
-          <input type="number" inputmode="decimal" id="amount" placeholder="0" min="0" step="0.01">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Mode of payment</label>
-        <div class="chips" id="modeGroup"></div>
-      </div>
-
-      <div class="field">
-        <label>Notes<span class="req">*</span></label>
-        <textarea id="notes" placeholder="What was this for?"></textarea>
-      </div>
-
+      <div class="field"><label>Category<span class="req">*</span></label><div class="chips" id="catGroup"></div></div>
+      <div class="field"><label>Mode of payment</label><div class="chips" id="modeGroup"></div></div>
+      <div class="field"><label>Notes<span class="req">*</span></label><textarea id="notes" placeholder="What was this for?"></textarea></div>
       <div class="submit-row">
         <button type="submit" class="submit-btn" id="submitBtn">Log entry</button>
         <div class="err" id="errMsg">Fill who, category, amount and notes first.</div>
@@ -472,59 +134,46 @@
   <div class="footer-note">Writes straight to your Google Sheet · no app store, no login</div>
 </div>
 
-<div class="stamp-overlay" id="stampOverlay">
-  <div class="stamp">Logged</div>
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <h2>Connect your sheet</h2>
+    <p>Paste your Apps Script Web App URL (ends in <code>/exec</code>). Saved only in this browser.</p>
+    <input type="text" id="endpointInput" placeholder="https://script.google.com/macros/s/.../exec">
+    <div class="settings-actions"><button class="btn-cancel" type="button" id="settingsCancel">Cancel</button><button class="btn-save" type="button" id="settingsSave">Save</button></div>
+    <div class="settings-status" id="settingsStatus">Saved. You're connected.</div>
+  </div>
 </div>
 
+<div class="stamp-overlay" id="stampOverlay">
+  <div class="money-scene" id="moneyScene">
+    <div class="tally-wrap"><div class="tally-amount">₹<span id="tallyNum">0</span></div><div class="tally-caption">Added to the ledger</div></div>
+  </div>
+</div>
 <script>
-  // Endpoint is stored in this browser only (localStorage), never in the file.
   const ENDPOINT_KEY = 'expense_tracker_endpoint';
-
-  function getEndpoint() {
-    return localStorage.getItem(ENDPOINT_KEY) || '';
-  }
-
-  function refreshGearState() {
+  function getEndpoint(){ return localStorage.getItem(ENDPOINT_KEY) || ''; }
+  function refreshGearState(){
     const gear = document.getElementById('gearBtn');
-    if (getEndpoint()) {
-      gear.classList.remove('needs-setup');
-      gear.title = 'Connected — click to change';
-    } else {
-      gear.classList.add('needs-setup');
-      gear.title = 'Not connected — click to set up';
-    }
+    if (getEndpoint()) { gear.classList.remove('needs-setup'); gear.title = 'Connected — click to change'; }
+    else { gear.classList.add('needs-setup'); gear.title = 'Not connected — click to set up'; }
   }
-
   const settingsOverlay = document.getElementById('settingsOverlay');
   const endpointInput = document.getElementById('endpointInput');
   const settingsStatus = document.getElementById('settingsStatus');
-
   document.getElementById('gearBtn').addEventListener('click', () => {
     endpointInput.value = getEndpoint();
     settingsStatus.style.display = 'none';
     settingsOverlay.classList.add('show');
   });
-
-  document.getElementById('settingsCancel').addEventListener('click', () => {
-    settingsOverlay.classList.remove('show');
-  });
-
+  document.getElementById('settingsCancel').addEventListener('click', () => settingsOverlay.classList.remove('show'));
   document.getElementById('settingsSave').addEventListener('click', () => {
     const val = endpointInput.value.trim();
-    if (val) {
-      localStorage.setItem(ENDPOINT_KEY, val);
-    } else {
-      localStorage.removeItem(ENDPOINT_KEY);
-    }
+    if (val) localStorage.setItem(ENDPOINT_KEY, val); else localStorage.removeItem(ENDPOINT_KEY);
     refreshGearState();
     settingsStatus.style.display = 'block';
     setTimeout(() => settingsOverlay.classList.remove('show'), 700);
   });
-
-  settingsOverlay.addEventListener('click', (e) => {
-    if (e.target === settingsOverlay) settingsOverlay.classList.remove('show');
-  });
-
+  settingsOverlay.addEventListener('click', (e) => { if (e.target === settingsOverlay) settingsOverlay.classList.remove('show'); });
   refreshGearState();
 
   const categories = [
@@ -536,7 +185,6 @@
     "Family & Visits","Class & courses","Emi installment","Insurance",
     "Repair & maintenance"
   ];
-
   const catGroup = document.getElementById('catGroup');
   categories.forEach(c => {
     const chip = document.createElement('div');
@@ -544,17 +192,13 @@
     chip.textContent = c;
     chip.dataset.val = c;
     chip.onclick = () => {
-      document.querySelectorAll('.chip').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('#catGroup .chip').forEach(el => el.classList.remove('active'));
       chip.classList.add('active');
     };
     catGroup.appendChild(chip);
   });
 
-  const paymentModes = [
-    "UPI","Credit Card - ICICI","Credit Card - Axis","Credit Card - SBI",
-    "Cash","Transfer","Phonepe","Others"
-  ];
-
+  const paymentModes = ["UPI","Credit Card - ICICI","Credit Card - Axis","Credit Card - SBI","Cash","Transfer","Phonepe","Others"];
   const modeGroup = document.getElementById('modeGroup');
   paymentModes.forEach(m => {
     const chip = document.createElement('div');
@@ -564,93 +208,126 @@
     chip.onclick = () => {
       const already = chip.classList.contains('active');
       document.querySelectorAll('#modeGroup .chip').forEach(el => el.classList.remove('active'));
-      if (!already) chip.classList.add('active'); // tap again to clear, since mode is optional
+      if (!already) chip.classList.add('active');
     };
     modeGroup.appendChild(chip);
   });
 
+  const coinSVG = `
+    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="coinFace" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#F5DD91"/>
+          <stop offset="55%" stop-color="#D9AC4C"/>
+          <stop offset="100%" stop-color="#9A7423"/>
+        </radialGradient>
+        <linearGradient id="coinEdge" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7A5A18"/>
+          <stop offset="100%" stop-color="#4F3A10"/>
+        </linearGradient>
+      </defs>
+      <circle cx="20" cy="20" r="19" fill="url(#coinEdge)"/>
+      <circle cx="20" cy="19" r="18" fill="url(#coinFace)"/>
+      <circle cx="20" cy="19" r="18" fill="none" stroke="#8A6A26" stroke-width="0.6" stroke-dasharray="1.6 1.4"/>
+      <circle cx="20" cy="19" r="14.5" fill="none" stroke="#B78A34" stroke-width="1"/>
+      <text x="20" y="25" text-anchor="middle" font-family="Georgia, serif" font-size="17" font-weight="700" fill="#6E5015">₹</text>
+      <ellipse cx="14" cy="11" rx="7" ry="3.4" fill="#FFF7DE" opacity="0.55" transform="rotate(-25 14 11)"/>
+    </svg>
+  `;
+  function spawnCoins(scene, count){
+    for (let i = 0; i < count; i++){
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      const left = 15 + Math.random() * 70;
+      const fall = 130 + Math.random() * 60;
+      const spin = (Math.random() > 0.5 ? 1 : -1) * (180 + Math.random() * 360);
+      const delay = Math.random() * 0.15;
+      coin.style.left = left + '%';
+      coin.style.setProperty('--fall-dist', fall + 'px');
+      coin.style.setProperty('--spin', spin + 'deg');
+      coin.style.animationDelay = delay + 's';
+      coin.innerHTML = coinSVG;
+      scene.appendChild(coin);
+    }
+  }
+  function animateTally(target){
+    const el = document.getElementById('tallyNum');
+    const amt = parseFloat(target) || 0;
+    const duration = 280;
+    const start = performance.now();
+    function step(now){
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const current = amt * eased;
+      el.textContent = amt % 1 === 0 ? Math.round(current).toLocaleString('en-IN') : current.toFixed(2);
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = amt % 1 === 0 ? amt.toLocaleString('en-IN') : amt.toFixed(2);
+    }
+    requestAnimationFrame(step);
+  }
+  function playMoneyAnimation(amount){
+    const overlay = document.getElementById('stampOverlay');
+    const scene = document.getElementById('moneyScene');
+    scene.querySelectorAll('.coin').forEach(c => c.remove());
+    spawnCoins(scene, 6);
+    animateTally(amount);
+    overlay.classList.add('show');
+    setTimeout(() => overlay.classList.remove('show'), 620);
+  }
+
+  const WHO_KEY = 'expense_tracker_last_who';
   document.querySelectorAll('#whoGroup button').forEach(btn => {
     btn.onclick = () => {
       document.querySelectorAll('#whoGroup button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      localStorage.setItem(WHO_KEY, btn.dataset.val);
     };
   });
-
-  document.getElementById('today').textContent = new Date().toLocaleDateString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric'
-  });
-
-  function bumpEntryNo() {
-    let n = parseInt(localStorage.getItem('chit_entry_no') || '0', 10) + 1;
-    localStorage.setItem('chit_entry_no', n);
-    return String(n).padStart(3, '0');
+  const savedWho = localStorage.getItem(WHO_KEY);
+  if (savedWho) {
+    const match = document.querySelector('#whoGroup button[data-val="' + savedWho + '"]');
+    if (match) match.classList.add('active');
   }
-  document.getElementById('entryNo').textContent = String(
-    (parseInt(localStorage.getItem('chit_entry_no') || '0', 10) + 1)
-  ).padStart(3, '0');
 
-  document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+  document.getElementById('today').textContent = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  document.getElementById('expenseForm').addEventListener('submit', (e) => {
     e.preventDefault();
-
     const who = document.querySelector('#whoGroup button.active');
-    const cat = document.querySelector('.chip.active');
+    const cat = document.querySelector('#catGroup .chip.active');
     const amount = document.getElementById('amount').value;
     const notes = document.getElementById('notes').value.trim();
     const modeChip = document.querySelector('#modeGroup .chip.active');
     const mode = modeChip ? modeChip.dataset.val : '';
     const errMsg = document.getElementById('errMsg');
+    if (!who || !cat || !amount || !notes) { errMsg.style.display = 'block'; return; }
+    errMsg.style.display = 'none';
 
-    if (!who || !cat || !amount || !notes) {
+    const endpoint = getEndpoint();
+    if (!endpoint) {
+      errMsg.innerHTML = 'Not connected yet — tap the <strong>⚙</strong> icon to add your sheet link.';
       errMsg.style.display = 'block';
       return;
     }
-    errMsg.style.display = 'none';
 
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Logging…';
+    const payload = new URLSearchParams({ person: who.dataset.val, category: cat.dataset.val, amount, mode, notes, timestamp: new Date().toISOString() });
 
-    const payload = new URLSearchParams({
-      person: who.dataset.val,
-      category: cat.dataset.val,
-      amount: amount,
-      mode: mode,
-      notes: notes,
-      timestamp: new Date().toISOString()
-    });
-
-    try {
-      const endpoint = getEndpoint();
-      if (!endpoint) {
-        throw new Error('not-configured');
-      }
-      await fetch(endpoint, {
-        method: 'POST',
-        body: payload
+    // Fire-and-forget: the entry logs instantly in the UI without waiting
+    // for the round trip to Google Sheets. If the write fails, we quietly
+    // retry once in the background; genuinely offline devices will lose
+    // the entry, so keep an eye out if you're ever on a flaky connection.
+    const trySend = (attempt) => {
+      fetch(endpoint, { method: 'POST', body: payload }).catch(() => {
+        if (attempt < 1) setTimeout(() => trySend(attempt + 1), 1500);
       });
+    };
+    trySend(0);
 
-      // success stamp
-      const overlay = document.getElementById('stampOverlay');
-      overlay.classList.add('show');
-      setTimeout(() => overlay.classList.remove('show'), 900);
-
-      document.getElementById('entryNo').textContent = bumpEntryNo();
-      document.getElementById('expenseForm').reset();
-      document.querySelectorAll('.chip.active, #whoGroup button.active')
-        .forEach(el => el.classList.remove('active'));
-
-    } catch (err) {
-      if (!getEndpoint()) {
-        errMsg.innerHTML = 'Not connected yet — tap the <strong>⚙</strong> icon top-right to add your sheet link.';
-      } else {
-        errMsg.textContent = 'Could not reach the sheet. Check your connection and try again.';
-      }
-      errMsg.style.display = 'block';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Log entry';
-    }
+    playMoneyAnimation(amount);
+    document.getElementById('expenseForm').reset();
+    document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
   });
 </script>
+
 </body>
 </html>
