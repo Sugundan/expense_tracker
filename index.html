@@ -400,10 +400,9 @@
   }
 
   /* ---------- Install button ----------
-     Rather than rely on Chrome's own (often flaky/hidden) install icon,
-     we capture the real "beforeinstallprompt" event ourselves and show a
-     single, calm button. It only appears once the browser has actually
-     confirmed the app is installable — no nagging, no repeated popups. */
+     Capture the real "beforeinstallprompt" event and show a single, calm
+     button. It only appears once the browser has actually confirmed the
+     app is installable. */
   const installBtn = document.getElementById('installBtn');
   let deferredPrompt = null;
 
@@ -415,8 +414,6 @@
 
   installBtn.addEventListener('click', async () => {
     if (!deferredPrompt) {
-      // iOS Safari (and some other browsers) never fire beforeinstallprompt —
-      // guide the person through the manual Add to Home Screen flow instead.
       alert('To install: tap the Share icon, then "Add to Home Screen".');
       return;
     }
@@ -433,9 +430,6 @@
     deferredPrompt = null;
   });
 
-  // iOS Safari has no beforeinstallprompt at all. Show the button there too,
-  // but only once, so people on iPhone still have a clear way to find the
-  // instructions instead of hunting through the Share menu unprompted.
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   if (isIOS && !isStandalone) {
