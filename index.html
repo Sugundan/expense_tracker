@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Expense Tracker</title>
+<link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#BC7A17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Expense Tracker">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1: #F3E7D6;
+    --bg-2: #EFE0CB;
+    --card: #FFFFFF;
+    --card-soft: #FFFDF9;
+    --ink: #362A1D;
+    --ink-soft: #8C8377;
+    --ink-faint: #C9C0AD;
+    --accent: #BC7A17;
+    --accent-deep: #A5690E;
+    --accent-soft: #FBF1DE;
+    --accent-border: #ECDBB8;
+    --pill-border: #ECE6D8;
+    --shadow: 0 16px 34px rgba(90,64,20,0.10);
+    --shadow-sm: 0 6px 16px rgba(90,64,20,0.08);
+    --warn: #C9615A;
+    --ok: #3E8E6E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    color: var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding: 30px 16px 60px;
+  }
+  .pad{ width:100%; max-width:460px; }
+
+  .masthead{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom: 22px; }
+  .masthead h1{ font-family:'Playfair Display',serif; font-weight:700; font-size:30px; margin:0; color:var(--ink); letter-spacing:-0.3px; }
+  .masthead .sub{ font-size:13px; color:var(--ink-soft); margin-top:4px; }
+
+  .gear-btn{ width:44px; height:44px; min-width:44px; border-radius:50%; border:1.5px solid var(--accent-border); background:var(--card); color:var(--accent); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; box-shadow:var(--shadow-sm); transition: all .15s ease; }
+  .gear-btn:hover{ transform:rotate(20deg); }
+  .gear-btn svg{ width:20px; height:20px; }
+  .gear-btn.needs-setup::after{ content:""; position:absolute; top:1px; right:1px; width:10px; height:10px; border-radius:50%; background:var(--warn); border:2px solid var(--bg-1); }
+
+  .field{ margin-bottom:22px; }
+  .field-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .field label{ font-size:11.5px; text-transform:uppercase; letter-spacing:1.5px; color:var(--ink-soft); font-weight:700; }
+  .field label .req{ color:var(--accent); margin-left:2px; }
+
+  /* Amount card */
+  .amount-card{ background: linear-gradient(180deg, var(--card-soft), var(--card)); border-radius:22px; box-shadow: var(--shadow); padding:20px 22px 22px; }
+  .amount-row{ display:flex; align-items:center; gap:10px; }
+  .currency-toggle{ display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:50%; background:var(--accent-soft); border:1.5px solid var(--accent-border); color:var(--accent); font-weight:700; font-size:19px; cursor:pointer; user-select:none; transition: transform .12s ease; flex-shrink:0; }
+  .currency-toggle:active{ transform:scale(0.92); }
+  .amount-row input{ border:none; background:transparent; outline:none; font-family:'Roboto Mono',monospace; font-size:38px; font-weight:700; color:var(--ink-faint); width:100%; padding:0; }
+  .amount-row input:focus, .amount-row input.has-val{ color:var(--ink); }
+  .amount-row input::placeholder{ color:var(--ink-faint); }
+
+  /* Logged by pill switch */
+  .who{ display:flex; gap:6px; background:var(--card); border-radius:16px; padding:6px; box-shadow: var(--shadow-sm); }
+  .who button{ flex:1; padding:13px 10px; border-radius:12px; border:none; background:transparent; font-weight:700; font-size:15px; color:var(--ink-soft); cursor:pointer; transition:all .15s ease; }
+  .who button.active{ background: var(--accent-soft); color:var(--accent-deep); box-shadow: inset 0 0 0 1.5px var(--accent-border); }
+
+  /* Chips */
+  .chips{ display:flex; flex-wrap:wrap; gap:9px; }
+  .chip{ padding:11px 16px; border-radius:999px; border:1.5px solid var(--pill-border); background:var(--card); font-size:14px; font-weight:500; color:var(--ink); cursor:pointer; user-select:none; transition:all .12s ease; box-shadow: var(--shadow-sm); }
+  .chip.active{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; box-shadow: 0 6px 16px rgba(188,122,23,0.35); }
+
+  textarea{ width:100%; min-height:56px; padding:12px 14px; border-radius:14px; border:1.5px solid var(--pill-border); background:var(--card); font-size:14.5px; color:var(--ink); resize:vertical; outline:none; font-family:'Inter',sans-serif; box-shadow: var(--shadow-sm); }
+  textarea::placeholder{ color:var(--ink-faint); }
+  textarea:focus{ border-color:var(--accent-border); }
+
+  .submit-row{ margin-top:24px; }
+  .submit-btn{ width:100%; padding:16px; border-radius:16px; border:none; background:linear-gradient(180deg, var(--accent), var(--accent-deep)); color:#fff; font-weight:700; font-size:15.5px; letter-spacing:0.3px; cursor:pointer; box-shadow: 0 10px 22px rgba(165,105,14,0.35); transition:transform .08s ease; }
+  .submit-btn:active{ transform:scale(0.98); }
+  .submit-btn:disabled{ opacity:0.5; cursor:default; }
+
+  .err{ color:var(--warn); font-size:12.5px; margin-top:10px; font-weight:600; display:none; }
+
+  /* Backup / sync status bar */
+  .backup-bar{ display:none; align-items:center; gap:10px; background:var(--accent-soft); border:1.5px solid var(--accent-border); border-radius:14px; padding:11px 14px; margin-top:14px; font-size:12.5px; color:var(--accent-deep); }
+  .backup-bar.show{ display:flex; }
+  .backup-bar .dot{ width:8px; height:8px; border-radius:50%; background:var(--warn); flex-shrink:0; animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+  .backup-bar .txt{ flex:1; line-height:1.4; }
+  .backup-bar .txt b{ display:block; color:var(--ink); font-size:13px; }
+  .backup-bar-actions{ display:flex; gap:6px; }
+  .backup-bar-actions button{ border:1.5px solid var(--accent-border); background:var(--card); color:var(--accent-deep); font-size:11.5px; font-weight:700; padding:7px 10px; border-radius:9px; cursor:pointer; }
+  .backup-bar-actions button:hover{ background:var(--accent-soft); }
+
+  .settings-overlay{ position:fixed; inset:0; background:rgba(54,42,29,0.45); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:60; padding:20px; }
+  .settings-overlay.show{ opacity:1; pointer-events:all; }
+  .settings-panel{ background:var(--card); border-radius:18px; max-width:420px; width:100%; padding:24px; box-shadow:var(--shadow); max-height:86vh; overflow-y:auto; }
+  .settings-panel h2{ font-family:'Playfair Display',serif; font-weight:700; font-size:24px; margin:0 0 6px; }
+  .settings-panel p{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 14px; }
+  .settings-panel p code{ background:var(--accent-soft); padding:1px 5px; border-radius:4px; font-size:11.5px; }
+  .settings-panel input[type="text"]{ width:100%; padding:11px 12px; border-radius:10px; border:1.5px solid var(--accent-border); background:var(--card-soft); font-family:'Roboto Mono',monospace; font-size:12.5px; margin-bottom:14px; }
+  .settings-actions{ display:flex; gap:10px; }
+  .settings-actions button{ flex:1; padding:11px; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; border:1.5px solid var(--ink); }
+  .btn-save{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  .btn-cancel{ background:transparent; color:var(--ink); }
+  .settings-status{ font-size:11.5px; margin-top:10px; color:var(--ok); display:none; }
+
+  .settings-divider{ height:1px; background:var(--pill-border); margin:18px 0; }
+  .settings-panel h3{ font-size:13px; margin:0 0 8px; color:var(--ink); }
+  .backup-list{ max-height:140px; overflow-y:auto; border:1.5px solid var(--pill-border); border-radius:10px; padding:8px 10px; font-size:11.5px; color:var(--ink-soft); font-family:'Roboto Mono',monospace; margin-bottom:12px; }
+  .backup-list .row{ padding:4px 0; border-bottom:1px dashed var(--pill-border); }
+  .backup-list .row:last-child{ border-bottom:none; }
+  .backup-list .empty{ text-align:center; padding:10px 0; color:var(--ink-faint); }
+  .settings-panel .mini-actions{ display:flex; gap:8px; }
+  .settings-panel .mini-actions button{ flex:1; padding:9px; border-radius:9px; font-size:12px; font-weight:700; border:1.5px solid var(--accent-border); background:var(--accent-soft); color:var(--accent-deep); cursor:pointer; }
+
+  .stamp-overlay{ position:fixed; inset:0; background:rgba(54,42,29,0.4); display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:50; overflow:hidden; }
+  .stamp-overlay.show{ opacity:1; pointer-events:all; }
+  .money-scene{ position:relative; width:100%; max-width:340px; height:260px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; }
+  .coin{ position:absolute; top:-40px; width:36px; height:36px; border-radius:50%; opacity:0; animation: coinFall 0.32s cubic-bezier(.5,0,.7,1) forwards; }
+  .coin svg{ width:100%; height:100%; display:block; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35)); }
+  @keyframes coinFall{ 0%{opacity:0; transform:translateY(0) rotateZ(0deg) scale(0.7);} 8%{opacity:1;} 70%{transform:translateY(var(--fall-dist)) rotateZ(var(--spin)) scale(1);} 100%{transform:translateY(var(--fall-dist)) rotateZ(var(--spin)) scale(1); opacity:1;} }
+  .tally-wrap{ position:relative; z-index:2; text-align:center; background:var(--card); border:2px solid var(--accent); border-radius:16px; padding:16px 26px; box-shadow:var(--shadow); opacity:0; transform:scale(0.85); }
+  .stamp-overlay.show .tally-wrap{ animation: tallyPop 0.2s ease .2s forwards; }
+  @keyframes tallyPop{ to{ opacity:1; transform:scale(1); } }
+  .tally-wrap .tally-amount{ font-family:'Roboto Mono',monospace; font-weight:700; font-size:28px; color:var(--accent-deep); }
+  .tally-wrap .tally-caption{ font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--ok); font-weight:700; margin-top:4px; }
+
+  .footer-note{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="pad">
+  <div class="masthead">
+    <div><h1>Expense Tracker</h1><div class="sub" id="today"></div></div>
+    <button class="gear-btn" id="gearBtn" title="Connect to your Google Sheet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
+
+  <form id="expenseForm">
+    <div class="field">
+      <div class="field-head"><label>Amount<span class="req">*</span></label></div>
+      <div class="amount-card">
+        <div class="amount-row">
+          <div class="currency-toggle" id="currencyToggle" title="Tap to switch currency">₹</div>
+          <input type="number" inputmode="decimal" id="amount" placeholder="0" min="0" step="0.01">
+        </div>
+      </div>
+    </div>
+
+    <div class="field"><label>Logged by<span class="req">*</span></label>
+      <div class="who" id="whoGroup" style="margin-top:10px;"><button type="button" data-val="Sugundan">Sugundan</button><button type="button" data-val="Abi">Abi</button></div>
+    </div>
+
+    <div class="field"><label>Category<span class="req">*</span></label><div class="chips" id="catGroup" style="margin-top:10px;"></div></div>
+    <div class="field"><label>Mode of payment</label><div class="chips" id="modeGroup" style="margin-top:10px;"></div></div>
+    <div class="field"><label>Notes<span class="req">*</span></label><div style="margin-top:10px;"><textarea id="notes" placeholder="What was this for?"></textarea></div></div>
+
+    <div class="submit-row">
+      <button type="submit" class="submit-btn" id="submitBtn">Log entry</button>
+      <div class="err" id="errMsg">Fill who, category, amount and notes first.</div>
+      <div class="backup-bar" id="backupBar">
+        <div class="dot"></div>
+        <div class="txt"><b id="backupCount">0 entries</b>Saved on this device, waiting to sync to your sheet.</div>
+        <div class="backup-bar-actions">
+          <button type="button" id="retryNowBtn">Retry</button>
+          <button type="button" id="exportBackupBtn">Export</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="footer-note">Writes straight to your Google Sheet · every entry is also saved on this device as a backup, even if the connection fails</div>
+</div>
+
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <h2>Connect your sheet</h2>
+    <p>Paste your Apps Script Web App URL (ends in <code>/exec</code>). Saved only in this browser.</p>
+    <input type="text" id="endpointInput" placeholder="https://script.google.com/macros/s/.../exec">
+    <div class="settings-actions"><button class="btn-cancel" type="button" id="settingsCancel">Cancel</button><button class="btn-save" type="button" id="settingsSave">Save</button></div>
+    <div class="settings-status" id="settingsStatus">Saved. You're connected.</div>
+
+    <div class="settings-divider"></div>
+    <h3 id="backupHeading">Local backup</h3>
+    <p>Every entry is saved on this device first, so nothing is lost even if the sheet write fails or you're offline. Entries below haven't synced yet.</p>
+    <div class="backup-list" id="backupList"><div class="empty">Nothing pending — everything's synced.</div></div>
+    <div class="mini-actions">
+      <button type="button" id="retryAllBtn">Retry all now</button>
+      <button type="button" id="exportAllBtn">Export backup (.json)</button>
+    </div>
+  </div>
+</div>
+
+<div class="stamp-overlay" id="stampOverlay">
+  <div class="money-scene" id="moneyScene">
+    <div class="tally-wrap"><div class="tally-amount" id="tallyCurrency">₹<span id="tallyNum">0</span></div><div class="tally-caption">Added to the ledger</div></div>
+  </div>
+</div>
+<script>
+  /* ---------- Currency toggle ---------- */
+  const CURRENCY_KEY = 'expense_tracker_currency';
+  const currencies = { '₹':'INR', '$':'USD' };
+  const currencyToggle = document.getElementById('currencyToggle');
+  function getCurrency(){ return localStorage.getItem(CURRENCY_KEY) || '₹'; }
+  function setCurrency(sym){
+    localStorage.setItem(CURRENCY_KEY, sym);
+    currencyToggle.textContent = sym;
+    document.getElementById('tallyCurrency').firstChild.textContent = sym;
+  }
+  currencyToggle.addEventListener('click', () => {
+    const next = getCurrency() === '₹' ? '$' : '₹';
+    setCurrency(next);
+  });
+  setCurrency(getCurrency());
+
+  /* ---------- Amount input styling ---------- */
+  const amountInput = document.getElementById('amount');
+  amountInput.addEventListener('input', () => {
+    amountInput.classList.toggle('has-val', amountInput.value !== '');
+  });
+
+  /* ---------- Endpoint / settings ---------- */
+  const ENDPOINT_KEY = 'expense_tracker_endpoint';
+  function getEndpoint(){ return localStorage.getItem(ENDPOINT_KEY) || ''; }
+  function refreshGearState(){
+    const gear = document.getElementById('gearBtn');
+    if (getEndpoint()) { gear.classList.remove('needs-setup'); gear.title = 'Connected — click to change'; }
+    else { gear.classList.add('needs-setup'); gear.title = 'Not connected — click to set up'; }
+  }
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  const endpointInput = document.getElementById('endpointInput');
+  const settingsStatus = document.getElementById('settingsStatus');
+  document.getElementById('gearBtn').addEventListener('click', () => {
+    endpointInput.value = getEndpoint();
+    settingsStatus.style.display = 'none';
+    renderBackupList();
+    settingsOverlay.classList.add('show');
+  });
+  document.getElementById('settingsCancel').addEventListener('click', () => settingsOverlay.classList.remove('show'));
+  document.getElementById('settingsSave').addEventListener('click', () => {
+    const val = endpointInput.value.trim();
+    if (val) localStorage.setItem(ENDPOINT_KEY, val); else localStorage.removeItem(ENDPOINT_KEY);
+    refreshGearState();
+    settingsStatus.style.display = 'block';
+    setTimeout(() => settingsOverlay.classList.remove('show'), 700);
+    retryPending();
+  });
+  settingsOverlay.addEventListener('click', (e) => { if (e.target === settingsOverlay) settingsOverlay.classList.remove('show'); });
+  refreshGearState();
+
+  /* ---------- Categories & payment modes ---------- */
+  const categories = [
+    "Food & Snacks","Hotel & Online food order","Grocery","Online Shopping",
+    "Offline Shopping","Milk","Travel & commute","Recharge & monthly bills",
+    "Hospital & Medicine","Meat","Fuel","Rent","Household items",
+    "Grooming & personal care","Recurring expenses","Movie and entertainment",
+    "Gifts & occasions","Religious & spiritual","Admin & documents",
+    "Family & Visits","Class & courses","Emi installment","Insurance",
+    "Repair & maintenance"
+  ];
+  const catGroup = document.getElementById('catGroup');
+  categories.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = c;
+    chip.dataset.val = c;
+    chip.onclick = () => {
+      document.querySelectorAll('#catGroup .chip').forEach(el => el.classList.remove('active'));
+      chip.classList.add('active');
+    };
+    catGroup.appendChild(chip);
+  });
+
+  const paymentModes = ["UPI","Credit Card - ICICI","Credit Card - Axis","Credit Card - SBI","Cash","Transfer","Phonepe","Others"];
+  const modeGroup = document.getElementById('modeGroup');
+  paymentModes.forEach(m => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = m;
+    chip.dataset.val = m;
+    chip.onclick = () => {
+      const already = chip.classList.contains('active');
+      document.querySelectorAll('#modeGroup .chip').forEach(el => el.classList.remove('active'));
+      if (!already) chip.classList.add('active');
+    };
+    modeGroup.appendChild(chip);
+  });
+
+  /* ---------- Coin animation ---------- */
+  const coinSVG = `
+    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="coinFace" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#F5DD91"/>
+          <stop offset="55%" stop-color="#D9AC4C"/>
+          <stop offset="100%" stop-color="#9A7423"/>
+        </radialGradient>
+        <linearGradient id="coinEdge" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#7A5A18"/>
+          <stop offset="100%" stop-color="#4F3A10"/>
+        </linearGradient>
+      </defs>
+      <circle cx="20" cy="20" r="19" fill="url(#coinEdge)"/>
+      <circle cx="20" cy="19" r="18" fill="url(#coinFace)"/>
+      <circle cx="20" cy="19" r="18" fill="none" stroke="#8A6A26" stroke-width="0.6" stroke-dasharray="1.6 1.4"/>
+      <circle cx="20" cy="19" r="14.5" fill="none" stroke="#B78A34" stroke-width="1"/>
+      <text x="20" y="25" text-anchor="middle" font-family="Georgia, serif" font-size="17" font-weight="700" fill="#6E5015" id="coinGlyph">₹</text>
+      <ellipse cx="14" cy="11" rx="7" ry="3.4" fill="#FFF7DE" opacity="0.55" transform="rotate(-25 14 11)"/>
+    </svg>
+  `;
+  function spawnCoins(scene, count){
+    for (let i = 0; i < count; i++){
+      const coin = document.createElement('div');
+      coin.className = 'coin';
+      const left = 15 + Math.random() * 70;
+      const fall = 130 + Math.random() * 60;
+      const spin = (Math.random() > 0.5 ? 1 : -1) * (180 + Math.random() * 360);
+      const delay = Math.random() * 0.15;
+      coin.style.left = left + '%';
+      coin.style.setProperty('--fall-dist', fall + 'px');
+      coin.style.setProperty('--spin', spin + 'deg');
+      coin.style.animationDelay = delay + 's';
+      coin.innerHTML = coinSVG.replace('₹', getCurrency());
+      scene.appendChild(coin);
+    }
+  }
+  function animateTally(target){
+    const el = document.getElementById('tallyNum');
+    const amt = parseFloat(target) || 0;
+    const duration = 280;
+    const start = performance.now();
+    function step(now){
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const current = amt * eased;
+      el.textContent = amt % 1 === 0 ? Math.round(current).toLocaleString('en-IN') : current.toFixed(2);
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = amt % 1 === 0 ? amt.toLocaleString('en-IN') : amt.toFixed(2);
+    }
+    requestAnimationFrame(step);
+  }
+  function playMoneyAnimation(amount){
+    const overlay = document.getElementById('stampOverlay');
+    const scene = document.getElementById('moneyScene');
+    scene.querySelectorAll('.coin').forEach(c => c.remove());
+    spawnCoins(scene, 6);
+    animateTally(amount);
+    overlay.classList.add('show');
+    setTimeout(() => overlay.classList.remove('show'), 620);
+  }
+
+  /* ---------- Logged by memory ---------- */
+  const WHO_KEY = 'expense_tracker_last_who';
+  document.querySelectorAll('#whoGroup button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#whoGroup button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem(WHO_KEY, btn.dataset.val);
+    };
+  });
+  const savedWho = localStorage.getItem(WHO_KEY);
+  if (savedWho) {
+    const match = document.querySelector('#whoGroup button[data-val="' + savedWho + '"]');
+    if (match) match.classList.add('active');
+  }
+
+  document.getElementById('today').textContent = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  /* ================= BACKUP SYSTEM =================
+     Every entry is written to localStorage BEFORE we ever attempt the
+     network call, so nothing is lost if the sheet write fails, the
+     device is offline, or the tab is closed mid-request. Unsynced
+     entries stay queued, get retried automatically (on load, when the
+     browser comes back online, and after every new save), and can be
+     retried manually or exported as a .json file from the gear menu. */
+  const BACKUP_KEY = 'expense_tracker_backup_v1';
+
+  function loadBackup(){
+    try { return JSON.parse(localStorage.getItem(BACKUP_KEY)) || []; }
+    catch (e) { return []; }
+  }
+  function saveBackup(list){
+    try { localStorage.setItem(BACKUP_KEY, JSON.stringify(list)); }
+    catch (e) { /* storage full or blocked — entry still exists in memory for this session */ }
+  }
+  function addToBackup(entry){
+    const list = loadBackup();
+    list.push(entry);
+    saveBackup(list);
+    refreshBackupUI();
+    return entry.id;
+  }
+  function markSynced(id){
+    const list = loadBackup();
+    const idx = list.findIndex(e => e.id === id);
+    if (idx !== -1) { list.splice(idx, 1); saveBackup(list); }
+    refreshBackupUI();
+  }
+  function bumpAttempt(id){
+    const list = loadBackup();
+    const idx = list.findIndex(e => e.id === id);
+    if (idx !== -1) { list[idx].attempts = (list[idx].attempts||0) + 1; list[idx].lastTry = new Date().toISOString(); saveBackup(list); }
+  }
+
+  function refreshBackupUI(){
+    const list = loadBackup();
+    const bar = document.getElementById('backupBar');
+    const count = document.getElementById('backupCount');
+    if (list.length > 0) {
+      bar.classList.add('show');
+      count.textContent = list.length + (list.length === 1 ? ' entry' : ' entries') + ' pending sync';
+    } else {
+      bar.classList.remove('show');
+    }
+    renderBackupList();
+  }
+
+  function renderBackupList(){
+    const list = loadBackup();
+    const box = document.getElementById('backupList');
+    if (!list.length) { box.innerHTML = '<div class="empty">Nothing pending, everything is synced.</div>'; return; }
+    box.innerHTML = list.slice().reverse().map(e => {
+      const d = new Date(e.timestamp);
+      const when = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short' }) + ' ' + d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+      return '<div class="row">' + when + ' · ' + e.currency + e.amount + ' · ' + e.category + (e.attempts ? ' (retried ' + e.attempts + 'x)' : '') + '</div>';
+    }).join('');
+  }
+
+  function sendEntry(entry, isRetry){
+    const endpoint = getEndpoint();
+    if (!endpoint) return; // nothing to send to yet; stays safely queued
+    const payload = new URLSearchParams({
+      person: entry.person, category: entry.category, amount: entry.amount,
+      currency: entry.currency, mode: entry.mode, notes: entry.notes, timestamp: entry.timestamp
+    });
+    fetch(endpoint, { method: 'POST', body: payload })
+      .then(() => markSynced(entry.id))
+      .catch(() => { bumpAttempt(entry.id); refreshBackupUI(); });
+  }
+
+  function retryPending(){
+    const endpoint = getEndpoint();
+    if (!endpoint) return;
+    loadBackup().forEach(entry => sendEntry(entry, true));
+  }
+
+  function exportBackup(){
+    const list = loadBackup();
+    const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'expense-tracker-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('retryNowBtn').addEventListener('click', retryPending);
+  document.getElementById('exportBackupBtn').addEventListener('click', exportBackup);
+  document.getElementById('retryAllBtn').addEventListener('click', retryPending);
+  document.getElementById('exportAllBtn').addEventListener('click', exportBackup);
+
+  window.addEventListener('online', retryPending);
+  // Try once on load in case entries were queued from a previous offline session
+  refreshBackupUI();
+  retryPending();
+  // Light periodic retry in case a request silently stalled
+  setInterval(retryPending, 30000);
+
+  /* ---------- Submit handler ---------- */
+  document.getElementById('expenseForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const who = document.querySelector('#whoGroup button.active');
+    const cat = document.querySelector('#catGroup .chip.active');
+    const amount = document.getElementById('amount').value;
+    const notes = document.getElementById('notes').value.trim();
+    const modeChip = document.querySelector('#modeGroup .chip.active');
+    const mode = modeChip ? modeChip.dataset.val : '';
+    const errMsg = document.getElementById('errMsg');
+    if (!who || !cat || !amount || !notes) { errMsg.style.display = 'block'; return; }
+    errMsg.style.display = 'none';
+
+    const entry = {
+      id: 'e_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+      person: who.dataset.val,
+      category: cat.dataset.val,
+      amount,
+      currency: getCurrency(),
+      mode,
+      notes,
+      timestamp: new Date().toISOString(),
+      attempts: 0
+    };
+
+    // Save locally FIRST — this is the backup. The entry now survives
+    // even if the network request below fails or never completes.
+    addToBackup(entry);
+
+    if (!getEndpoint()) {
+      errMsg.innerHTML = 'Not connected yet — tap the <strong>⚙</strong> icon to add your sheet link. Your entry is saved on this device and will sync once connected.';
+      errMsg.style.display = 'block';
+    }
+
+    sendEntry(entry, false);
+
+    playMoneyAnimation(amount);
+    document.getElementById('expenseForm').reset();
+    amountInput.classList.remove('has-val');
+    document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
+    if (savedWho) { const m = document.querySelector('#whoGroup button[data-val="' + localStorage.getItem(WHO_KEY) + '"]'); if (m) m.classList.add('active'); }
+  });
+</script>
+
+</body>
+</html>
